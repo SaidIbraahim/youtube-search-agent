@@ -49,7 +49,7 @@ export function Chat({ messages, isLoading, onSendMessage, onClear }: ChatProps)
           </div>
         ) : (
           <div className="max-w-4xl mx-auto">
-            {messages.map((message, index) => (
+            {messages.map((message) => (
               <div key={message.id} className="py-1.5">
                 <Message message={message} />
               </div>
