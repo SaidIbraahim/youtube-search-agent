@@ -8,18 +8,13 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api"
+      "destination": "/api/index.py"
     },
     {
       "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
-  "functions": {
-    "api/index.py": {
-      "runtime": "python3.9"
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",

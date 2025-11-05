@@ -1,0 +1,16 @@
+# Root requirements.txt for Vercel Python serverless functions
+# This file is used by Vercel to install dependencies for api/ functions
+# Note: Vercel will use api/requirements.txt if it exists, otherwise this file
+
+pytube
+youtube-transcript-api==1.2.3
+langchain>=1.0.0
+langchain-community>=0.4.1
+langchain-openai>=1.0.0
+langchain-groq>=0.2.0
+yt-dlp
+python-dotenv==1.0.1
+fastapi>=0.104.0
+mangum>=0.17.0
+diskcache>=5.6.0
+
