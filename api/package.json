@@ -1,0 +1,10 @@
+{
+  "name": "youtube-agent-api",
+  "version": "2.0.0",
+  "description": "YouTube Agent API for Vercel serverless functions",
+  "scripts": {
+    "start": "python -m youtube_agent.app.api"
+  },
+  "dependencies": {}
+}
+

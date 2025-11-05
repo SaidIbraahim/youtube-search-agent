@@ -1,0 +1,113 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+*.egg-info/
+dist/
+build/
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment Variables - NEVER COMMIT THESE
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+*.env
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# Cache
+.cache/
+*.db
+*.db-shm
+*.db-wal
+.cache/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.next/
+frontend/.nuxt/
+frontend/.output/
+frontend/.turbo/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+.DS_Store?
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Jupyter Notebooks (if any)
+.ipynb_checkpoints/
+*.ipynb
+
+# Python virtual environments
+venv/
+ENV/
+env/
+
+# Package files
+*.whl
+*.tar.gz
+
+# Vercel
+.vercel/
+
+# Python dependencies (install via requirements.txt)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Large files and dependencies
+*.zip
+*.tar
+*.gz
+*.rar
+
+# Database files
+*.sqlite
+*.sqlite3
+
+# Build artifacts
+*.map
+*.min.js
+*.min.css
+
