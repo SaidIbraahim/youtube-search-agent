@@ -1,8 +1,8 @@
 import type { QueryRequest, QueryResponse, CacheStats } from '../types';
 
-// API URL from environment or default to localhost for development
+// API URL: use VITE_API_URL if provided; otherwise use '/api' in production, localhost in dev
 const API_BASE_URL = import.meta.env.VITE_API_URL || 
-  (import.meta.env.PROD ? '' : 'http://localhost:8000');
+  (import.meta.env.PROD ? '/api' : 'http://localhost:8000');
 
 class ApiService {
   private async request<T>(

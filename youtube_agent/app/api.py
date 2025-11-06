@@ -122,6 +122,18 @@ async def health_check():
 async def process_query(request: QueryRequest):
     """Process a single query."""
     try:
+        # Quick greeting guard to avoid unnecessary tool-calls
+        simple_greetings = {"hi", "hello", "hey", "hola", "yo"}
+        if request.query.strip().lower() in simple_greetings:
+            return QueryResponse(
+                query=request.query,
+                response=(
+                    "Hello! I'm your YouTube Agent. I can search videos, fetch transcripts, "
+                    "summarize content, and provide sources. Ask me about a video or topic, "
+                    "e.g. 'Summarize https://youtu.be/...'") ,
+                success=True,
+            )
+
         chain = build_universal_chain()
         messages = chain.invoke({"query": request.query})
         final = messages[-1]
