@@ -21,6 +21,23 @@ class ApiService {
         },
       });
 
+      // Check if response is HTML (error page) instead of JSON
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await response.text();
+        // If we got HTML, the backend is likely not running or wrong URL
+        if (text.includes('<!DOCTYPE html>') || text.includes('<html')) {
+          throw new Error(
+            `Backend returned HTML instead of JSON. This usually means:\n` +
+            `1. The backend server is not running on ${API_BASE_URL}\n` +
+            `2. The API endpoint does not exist\n` +
+            `3. The request was redirected to a wrong URL\n\n` +
+            `Please ensure the backend is running: python -m youtube_agent.app.main --api`
+          );
+        }
+        throw new Error(`Unexpected response type: ${contentType}. Expected JSON.`);
+      }
+
       if (!response.ok) {
         const error = await response.json().catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
         
