@@ -8,14 +8,19 @@ from pydantic import BaseModel
 from .agent import build_universal_chain
 from .cache import clear_cache, get_cache_stats
 
+# Detect Vercel environment to set correct root_path when mounted at /api
+import os
+VERCEL = os.getenv("VERCEL") == "1"
+ROOT_PATH = "/api" if VERCEL else ""
+
 app = FastAPI(
     title="YouTube Agent API",
     description="Intelligent YouTube interaction system with recursive tool-calling",
     version="2.0.0",
+    root_path=ROOT_PATH,
 )
 
 # CORS middleware for frontend and Vercel
-import os
 
 # Get allowed origins from environment or use defaults
 ALLOWED_ORIGINS = os.getenv(
