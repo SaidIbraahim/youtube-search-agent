@@ -21,7 +21,7 @@ except (UnicodeDecodeError, Exception):
 
 @dataclass
 class Settings:
-    # Provider: groq | openai | ollama
+    # Provider: groq | openai | ollama | bytez | cerebras
     provider: str = os.getenv("LLM_PROVIDER", "groq").lower()
 
     # Common
@@ -37,6 +37,16 @@ class Settings:
     # Ollama (local optional)
     ollama_model: str = os.getenv("OLLAMA_MODEL", "llama3.2")
     ollama_base_url: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+
+    # Bytez (OpenAI-compatible gateway)
+    bytez_api_key: Optional[str] = os.getenv("BYTEZ_API_KEY")
+    # Default to OpenAI-compatible path used by Bytez gateways
+    bytez_base_url: Optional[str] = os.getenv("BYTEZ_BASE_URL", "https://api.bytez.com/openai/v1")
+
+    # Cerebras Cloud (OpenAI-compatible API)
+    # Correct endpoint: https://api.cerebras.ai/v1 (not cloud.cerebras.ai)
+    cerebras_api_key: Optional[str] = os.getenv("CEREBRAS_API_KEY")
+    cerebras_base_url: Optional[str] = os.getenv("CEREBRAS_BASE_URL", "https://api.cerebras.ai/v1")
 
 
 def get_settings() -> Settings:
@@ -67,6 +77,29 @@ def get_settings() -> Settings:
             "2. Add it to your .env file:\n"
             "   OPENAI_API_KEY=your_key_here\n"
             "3. Or set LLM_PROVIDER=groq in .env to use free Groq instead\n"
+        )
+        raise RuntimeError(error_msg)
+    if settings.provider == "bytez" and not settings.bytez_api_key:
+        error_msg = (
+            "BYTEZ_API_KEY not set!\n\n"
+            "To fix this:\n"
+            "1. Get a free API key from Bytez\n"
+            "2. Add to your .env file:\n"
+            "   BYTEZ_API_KEY=your_key_here\n"
+            "   BYTEZ_BASE_URL=https://<your-bytez-endpoint>/v1\n"
+            "3. Optionally set LLM_MODEL=gpt-4o-mini (default when using Bytez)\n"
+        )
+        raise RuntimeError(error_msg)
+    if settings.provider == "cerebras" and not settings.cerebras_api_key:
+        error_msg = (
+            "CEREBRAS_API_KEY not set!\n\n"
+            "To fix this:\n"
+            "1. Create or copy your key from Cerebras Cloud dashboard.\n"
+            "2. Add to your .env file:\n"
+            "   CEREBRAS_API_KEY=your_key_here\n"
+            "   CEREBRAS_BASE_URL=https://api.cerebras.ai/v1 (default, correct endpoint)\n"
+            "3. Optionally set LLM_MODEL=gpt-oss-120b (or llama-3.3-70b)\n"
+            "   Available models: gpt-oss-120b, llama-3.3-70b\n"
         )
         raise RuntimeError(error_msg)
     return settings

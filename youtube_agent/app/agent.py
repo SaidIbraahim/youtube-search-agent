@@ -28,6 +28,30 @@ def _build_llm_with_tools():
 
         model_name = settings.openai_model or settings.model_name
         llm = ChatOpenAI(model=model_name, api_key=settings.openai_api_key)
+    elif settings.provider == "bytez":
+        # Bytez is OpenAI-compatible; use ChatOpenAI with base_url and key
+        from langchain_openai import ChatOpenAI
+
+        # Default to gpt-4o-mini when provider is Bytez if not explicitly set
+        model_name = settings.model_name if settings.model_name else "gpt-4o-mini"
+        llm = ChatOpenAI(
+            model=model_name,
+            api_key=settings.bytez_api_key,
+            base_url=settings.bytez_base_url,
+        )
+    elif settings.provider == "cerebras":
+        # Cerebras Cloud: OpenAI-compatible endpoint at https://api.cerebras.ai/v1
+        # Supports tool calling via ChatOpenAI wrapper
+        from langchain_openai import ChatOpenAI
+
+        # Default model: gpt-oss-120b (as per Cerebras API documentation)
+        # Available models: gpt-oss-120b, llama-3.3-70b, etc.
+        model_name = settings.model_name or "gpt-oss-120b"
+        llm = ChatOpenAI(
+            model=model_name,
+            api_key=settings.cerebras_api_key,
+            base_url=settings.cerebras_base_url,
+        )
     else:
         # Fallback to Ollama if chosen
         llm = init_chat_model(

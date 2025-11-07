@@ -1,8 +1,8 @@
 import type { QueryRequest, QueryResponse, CacheStats } from '../types';
 
-// API URL: use VITE_API_URL if provided; otherwise use '/api' in production, localhost in dev
-const API_BASE_URL = import.meta.env.VITE_API_URL || 
-  (import.meta.env.PROD ? '/api' : 'http://localhost:8000');
+// API URL: use VITE_API_URL if provided; otherwise use '/api' in production, '/api' in dev (via Vite proxy)
+// In dev, Vite proxy rewrites /api/* to http://localhost:8000/*
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 class ApiService {
   private async request<T>(
@@ -21,25 +21,39 @@ class ApiService {
         },
       });
 
-      // Check if response is HTML (error page) instead of JSON
+      // Check content type first
       const contentType = response.headers.get('content-type') || '';
-      if (!contentType.includes('application/json')) {
-        const text = await response.text();
+      const isJson = contentType.includes('application/json');
+      
+      // Clone response for reading (in case we need to read as text)
+      const responseClone = response.clone();
+      
+      if (!isJson) {
+        // Not JSON - read as text to see what we got
+        const text = await responseClone.text();
         // If we got HTML, the backend is likely not running or wrong URL
-        if (text.includes('<!DOCTYPE html>') || text.includes('<html')) {
+        if (text.includes('<!DOCTYPE html>') || text.includes('<html') || text.includes('__next_f')) {
           throw new Error(
-            `Backend returned HTML instead of JSON. This usually means:\n` +
+            `❌ Backend returned HTML instead of JSON!\n\n` +
+            `This usually means:\n` +
             `1. The backend server is not running on ${API_BASE_URL}\n` +
-            `2. The API endpoint does not exist\n` +
-            `3. The request was redirected to a wrong URL\n\n` +
-            `Please ensure the backend is running: python -m youtube_agent.app.main --api`
+            `2. The request was redirected to a wrong URL\n` +
+            `3. CORS is blocking the request\n\n` +
+            `**Solution:**\n` +
+            `1. Start the backend: python -m youtube_agent.app.main --api\n` +
+            `2. Verify it's running: curl http://localhost:8000/health\n` +
+            `3. Check browser console for CORS errors`
           );
         }
-        throw new Error(`Unexpected response type: ${contentType}. Expected JSON.`);
+        throw new Error(`Unexpected response type: ${contentType}\n\nResponse: ${text.substring(0, 200)}`);
       }
 
       if (!response.ok) {
-        const error = await response.json().catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
+        const error = await response.json().catch(async () => {
+          // If JSON parsing fails, try to get text
+          const text = await responseClone.text();
+          return { detail: `HTTP ${response.status}: ${response.statusText}\n\nResponse: ${text.substring(0, 200)}` };
+        });
         
         // Handle rate limit errors specially
         if (response.status === 429) {

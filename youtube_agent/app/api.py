@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from .agent import build_universal_chain
 from .cache import clear_cache, get_cache_stats
+from .config import get_settings
 
 # Detect Vercel environment to set correct root_path when mounted at /api
 import os
@@ -23,6 +24,8 @@ app = FastAPI(
 # CORS middleware for frontend and Vercel
 
 # Get allowed origins from environment or use defaults
+# In production, Vercel sets VERCEL_URL and VERCEL_ENV automatically
+# You can also set ALLOWED_ORIGINS explicitly in Vercel environment variables
 ALLOWED_ORIGINS = os.getenv(
     "ALLOWED_ORIGINS",
     "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000"
@@ -158,14 +161,40 @@ async def process_query(request: QueryRequest):
     except Exception as e:
         error_str = str(e)
         
+        # Detect HTML responses from LLM API (wrong endpoint/auth)
+        if "<!DOCTYPE html>" in error_str or "<html" in error_str.lower() or "cerebras cloud" in error_str.lower():
+            settings = get_settings()
+            provider = settings.provider
+            raise HTTPException(
+                status_code=500,
+                detail={
+                    "error": "LLM API returned HTML instead of JSON",
+                    "message": f"The {provider.upper()} API endpoint returned a website page instead of API response.",
+                    "likely_causes": [
+                        "API endpoint URL is incorrect",
+                        "API key is missing or invalid",
+                        "API endpoint requires different authentication",
+                        "The provider's API structure has changed"
+                    ],
+                    "suggestions": [
+                        f"Verify your {provider.upper()}_API_KEY is correct",
+                        f"Check the {provider.upper()}_BASE_URL endpoint",
+                        "Try switching to a different LLM provider (groq, openai)",
+                        "Check the provider's documentation for the correct API endpoint"
+                    ],
+                    "provider": provider,
+                    "original_error_preview": error_str[:500] if len(error_str) > 500 else error_str
+                }
+            )
+        
         # Handle rate limit errors with better messaging
         if "429" in error_str or "rate_limit" in error_str.lower() or "Rate limit" in error_str:
             raise HTTPException(
                 status_code=429,
                 detail={
                     "error": "Rate limit exceeded",
-                    "message": "You've reached the daily token limit for your Groq API. Please try again later or upgrade your plan.",
-                    "suggestion": "Visit https://console.groq.com/settings/billing to upgrade to Dev Tier for higher limits",
+                    "message": "You've reached the daily token limit for your LLM API. Please try again later or upgrade your plan.",
+                    "suggestion": "Wait for the rate limit to reset or upgrade your API plan",
                     "original_error": error_str
                 }
             )
