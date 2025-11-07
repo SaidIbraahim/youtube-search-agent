@@ -54,27 +54,37 @@ if FRONTEND_URL:
 ALLOWED_ORIGINS = [origin.strip() for origin in ALLOWED_ORIGINS if origin.strip()]
 
 # For production, allow all origins if needed (can be restricted via environment)
-# Note: FastAPI doesn't support wildcard "*" in allow_origins, so we use a list
+# Note: FastAPI doesn't support wildcard "*" in allow_origins, so we use regex
 ALLOW_ALL_ORIGINS = os.getenv("ALLOW_ALL_ORIGINS", "false").lower() == "true"
-if ALLOW_ALL_ORIGINS:
-    # Use allow_origin_regex for wildcard support
-    ALLOWED_ORIGINS = [r".*"]
 
 # Configure CORS based on environment
-if ALLOW_ALL_ORIGINS:
-    # Allow all origins for development/flexible deployment
+try:
+    if ALLOW_ALL_ORIGINS:
+        # Allow all origins for development/flexible deployment
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origin_regex=r".*",
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+    else:
+        # Restrict to specific origins
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=ALLOWED_ORIGINS,
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+except Exception as e:
+    # If CORS setup fails, log but don't crash - app will still work
+    import logging
+    logging.error(f"CORS middleware setup failed: {e}")
+    # Add a basic CORS middleware as fallback
     app.add_middleware(
         CORSMiddleware,
-        allow_origin_regex=r".*",
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-else:
-    # Restrict to specific origins
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=ALLOWED_ORIGINS,
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
