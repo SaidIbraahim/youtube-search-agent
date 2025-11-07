@@ -9,16 +9,17 @@ from .agent import build_universal_chain
 from .cache import clear_cache, get_cache_stats
 from .config import get_settings
 
-# Detect Vercel environment to set correct root_path when mounted at /api
+# Detect Vercel environment
 import os
 VERCEL = os.getenv("VERCEL") == "1"
-ROOT_PATH = "/api" if VERCEL else ""
 
+# For Vercel with Mangum, we need root_path="/api" so FastAPI knows the base path
+# This ensures routes like /health work correctly when accessed via /api/health
 app = FastAPI(
     title="YouTube Agent API",
     description="Intelligent YouTube interaction system with recursive tool-calling",
     version="2.0.0",
-    root_path=ROOT_PATH,
+    root_path="/api" if VERCEL else "",
 )
 
 # CORS middleware for frontend and Vercel
