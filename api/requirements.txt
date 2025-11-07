@@ -2,6 +2,7 @@ pytube
 youtube-transcript-api==1.2.3
 langchain>=1.0.0
 langchain-community>=0.4.1
+langchain-ollama>=1.0.0
 langchain-openai>=1.0.0
 langchain-groq>=0.2.0
 yt-dlp
@@ -9,4 +10,5 @@ python-dotenv==1.0.1
 fastapi>=0.104.0
 mangum>=0.17.0
 diskcache>=5.6.0
+pydantic>=2.0.0
 

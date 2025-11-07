@@ -1,18 +1,22 @@
 """
 Vercel serverless function catch-all handler for FastAPI.
 
-This handler catches all requests to /api/* and forwards them to FastAPI via Mangum.
+Vercel automatically routes /api/* requests to this function.
+We use Mangum to wrap FastAPI as an ASGI handler.
 """
 import sys
 import os
 
-# Add parent directory to path to import youtube_agent
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+# Add parent directory to Python path
+# Vercel runs functions from the repo root
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if base_dir not in sys.path:
+    sys.path.insert(0, base_dir)
 
+# Import FastAPI app and wrap with Mangum
 from mangum import Mangum
 from youtube_agent.app.api import app
 
-# Wrap FastAPI app with Mangum
-# This handler catches all /api/* routes
+# Export handler for Vercel
+# Mangum converts ASGI app to Lambda handler format
 handler = Mangum(app, lifespan="off")
-
