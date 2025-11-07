@@ -1,3 +1,5 @@
+import { Logo } from './Logo';
+
 interface HeaderProps {
   onMenuClick: () => void;
 }
@@ -7,13 +9,19 @@ export function Header({ onMenuClick }: HeaderProps) {
     <header className="bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg sticky top-0 z-30">
       <div className="container mx-auto px-6 py-4 md:py-6">
         <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold drop-shadow-lg">
-              🎥 YouTube Agent
-            </h1>
-            <p className="text-primary-100 text-xs md:text-sm font-light mt-1">
-              Your intelligent AI agent for YouTube analysis, summaries, and insights
-            </p>
+          <div className="flex items-center gap-4 flex-1">
+            <Logo size="md" className="flex-shrink-0" />
+            <div>
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold drop-shadow-lg flex items-center gap-2">
+                YouTube Agent
+                <span className="text-xs md:text-sm font-normal bg-white/20 px-2 py-1 rounded-full">
+                  AI
+                </span>
+              </h1>
+              <p className="text-primary-100 text-xs md:text-sm font-light mt-1">
+                Your intelligent AI agent for YouTube analysis, summaries, and insights
+              </p>
+            </div>
           </div>
           <button
             onClick={onMenuClick}

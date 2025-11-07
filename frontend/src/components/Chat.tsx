@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Message } from './Message';
 import { ExampleQueries } from './ExampleQueries';
+import { Logo } from './Logo';
 import type { Message as MessageType } from '../types';
 
 interface ChatProps {
@@ -40,18 +41,24 @@ export function Chat({ messages, isLoading, onSendMessage, onClear }: ChatProps)
       {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 bg-gradient-to-b from-gray-50 to-white">
         {messages.length === 0 ? (
-            <div className="text-center text-gray-500 mt-16 space-y-4">
-            <div className="text-6xl mb-4">👋</div>
-            <p className="text-2xl font-semibold text-gray-700">Welcome to YouTube Agent!</p>
-            <p className="text-base text-gray-500 max-w-md mx-auto">
-              Start a conversation or try an example below. I can help you search, summarize, and analyze YouTube videos.
-            </p>
+          <div className="text-center text-gray-500 mt-16 space-y-6">
+            <div className="flex justify-center mb-6">
+              <Logo size="lg" className="opacity-80" />
+            </div>
+            <div className="space-y-3">
+              <p className="text-3xl font-bold text-gray-800 bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
+                Welcome to YouTube Agent
+              </p>
+              <p className="text-base text-gray-600 max-w-lg mx-auto leading-relaxed">
+                Start a conversation or try an example below. I can help you search, summarize, and analyze YouTube videos.
+              </p>
+            </div>
           </div>
         ) : (
           <div className="max-w-4xl mx-auto">
             {messages.map((message) => (
-              <div key={message.id} className="py-1.5">
-                <Message message={message} />
+              <div key={message.id} className="py-2">
+                <Message message={message} enableTyping={true} />
               </div>
             ))}
           </div>
@@ -60,14 +67,14 @@ export function Chat({ messages, isLoading, onSendMessage, onClear }: ChatProps)
         {isLoading && (
           <div className="max-w-4xl mx-auto py-2">
             <div className="flex justify-start">
-              <div className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                    <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                    <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              <div className="bg-white border border-gray-200 rounded-2xl px-5 py-4 shadow-sm">
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <div className="flex space-x-1.5">
+                    <div className="w-2.5 h-2.5 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                    <div className="w-2.5 h-2.5 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                    <div className="w-2.5 h-2.5 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                   </div>
-                  <span className="font-medium">💭 Thinking...</span>
+                  <span className="font-medium">Processing...</span>
                 </div>
               </div>
             </div>
@@ -98,7 +105,7 @@ export function Chat({ messages, isLoading, onSendMessage, onClear }: ChatProps)
             disabled={!input.trim() || isLoading}
             className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap px-6 py-4 text-base min-w-[100px]"
           >
-            {isLoading ? 'Sending...' : 'Send'}
+            Send
           </button>
           {messages.length > 0 && (
             <button
