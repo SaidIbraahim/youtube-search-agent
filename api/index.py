@@ -1,13 +1,14 @@
-"""Minimal AWS Lambda-style handler for Vercel testing."""
+"""Ultra-minimal handler - no imports except json."""
+import json
 
 def handler(event, context):
+    """Minimal handler - returns JSON string."""
+    response = {
+        "status": "ok",
+        "message": "Python handler is working",
+    }
     return {
         "statusCode": 200,
         "headers": {"Content-Type": "application/json"},
-        "body": {
-            "status": "ok",
-            "message": "Simple Python handler responding",
-            "event": event.get("path") if isinstance(event, dict) else str(event),
-        },
+        "body": json.dumps(response),
     }
-
