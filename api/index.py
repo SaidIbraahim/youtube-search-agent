@@ -1,19 +1,13 @@
-"""
-Simple FastAPI handler for Vercel - test if basic setup works.
-"""
-from fastapi import FastAPI
-from mangum import Mangum
+"""Minimal AWS Lambda-style handler for Vercel testing."""
 
-app = FastAPI()
-
-@app.get("/")
-def read_root():
-    return {"message": "Hello from Vercel", "status": "working"}
-
-@app.get("/health")
-def health():
-    return {"status": "healthy"}
-
-# Export handler for Vercel
-handler = Mangum(app)
+def handler(event, context):
+    return {
+        "statusCode": 200,
+        "headers": {"Content-Type": "application/json"},
+        "body": {
+            "status": "ok",
+            "message": "Simple Python handler responding",
+            "event": event.get("path") if isinstance(event, dict) else str(event),
+        },
+    }
 
