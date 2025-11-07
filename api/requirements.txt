@@ -7,8 +7,9 @@ langchain-openai>=1.0.0
 langchain-groq>=0.2.0
 yt-dlp
 python-dotenv==1.0.1
-fastapi>=0.104.0
+fastapi>=0.104.0,<1.0.0
 mangum>=0.17.0
 diskcache>=5.6.0
-pydantic>=2.0.0
+pydantic>=1.10.0,<3.0.0
+uvicorn>=0.24.0
 
